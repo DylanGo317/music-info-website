@@ -1,3 +1,5 @@
+import {useState} from 'react'
+
 // Authorization code
 const clientId = '6fc5eda025b8463ea9bd776424fec51d'
 const redirectUri = 'http://localhost:3001';
@@ -21,32 +23,6 @@ const generateRandomString = (length) => {
       .replace(/=/g, '')
       .replace(/\+/g, '-')
       .replace(/\//g, '_');
-  }
-
-  async function getToken(code) {
-    let codeVerifier = sessionStorage.getItem('code_verifier');
-
-    const payload = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        client_id: clientId,
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: redirectUri,
-        code_verifier: codeVerifier,
-      }),
-    }
-  
-    const tokenEndpoint = "https://accounts.spotify.com/api/token";
-
-    const body = await fetch(tokenEndpoint, payload);
-    const response = await body.json();
-  
-    sessionStorage.setItem('access_token', response.access_token);
-    console.log("hi", sessionStorage.getItem('access_token'));
   }
   
   async function redirectToSpotifyAuthorize() {  
@@ -72,6 +48,36 @@ const generateRandomString = (length) => {
   }
 
 const SpotifyAuthorization = () => {
+
+  const [hasToken, setHasToken] = useState(false);
+
+    async function getToken(code) {
+      let codeVerifier = sessionStorage.getItem('code_verifier');
+
+      const payload = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          client_id: clientId,
+          grant_type: 'authorization_code',
+          code,
+          redirect_uri: redirectUri,
+          code_verifier: codeVerifier,
+        }),
+      }
+    
+      const tokenEndpoint = "https://accounts.spotify.com/api/token";
+
+      const body = await fetch(tokenEndpoint, payload);
+      const response = await body.json();
+    
+      sessionStorage.setItem('access_token', response.access_token);
+      setHasToken(true);
+      console.log("token:", sessionStorage.getItem('access_token'));
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     let code = urlParams.get('code');
     
@@ -79,12 +85,12 @@ const SpotifyAuthorization = () => {
     let error = urlParams.get('error');
     let state = urlParams.get('state');
 
-    if (code) {
+    if (code && !hasToken) {
         getToken(code);
     }
     // Error Handling
     let message = "";
-    if (sessionStorage.getItem('access_token') === null) {
+    if (!hasToken) {
         message = "Login to spotify to use the app";
     } else {
         message = "Logged in";
@@ -99,5 +105,3 @@ const SpotifyAuthorization = () => {
 }
 
 export default SpotifyAuthorization
-
-// TODO: Use react states to accurately show when has access token
