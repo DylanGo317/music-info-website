@@ -47,10 +47,12 @@ const generateRandomString = (length) => {
     window.location.href = authUrl.toString();
   }
 
-const SpotifyAuthorization = () => {
+const SpotifyAuthorization = (props) => {
 
-  const [hasToken, setHasToken] = useState(false);
+  let hasToken = props.hasToken;
+  let setHasToken = props.setHasToken;
 
+  console.log("has token", hasToken);
   async function getToken(code) {
     let codeVerifier = sessionStorage.getItem('code_verifier');
 
