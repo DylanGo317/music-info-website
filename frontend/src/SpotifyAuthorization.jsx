@@ -52,7 +52,6 @@ const SpotifyAuthorization = (props) => {
   let hasToken = props.hasToken;
   let setHasToken = props.setHasToken;
 
-  console.log("has token", hasToken);
   async function getToken(code) {
     let codeVerifier = sessionStorage.getItem('code_verifier');
 
