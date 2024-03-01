@@ -26,7 +26,7 @@ const generateRandomString = (length) => {
   }
   
   async function redirectToSpotifyAuthorize() {  
-    const scope = 'user-read-private user-read-email';
+    const scope = 'user-read-private user-read-email user-top-read';
     const authUrl = new URL("https://accounts.spotify.com/authorize")
   
     const hashed = await sha256(codeVerifier)
